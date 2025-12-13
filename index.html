@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skyline Chatbot</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-main: #0b0b12;
+      --bg-panel: #12121c;
+      --purple-main: #8b5cf6;
+      --purple-glow: #a78bfa;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-soft: rgba(139, 92, 246, 0.25);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      height: 100vh;
+      background: radial-gradient(circle at top, #1a1033, var(--bg-main));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Inter, sans-serif;
+      color: var(--text-main);
+    }
+
+    .skyline-container {
+      width: 100%;
+      max-width: 420px;
+      height: 640px;
+      background: linear-gradient(180deg, #0f0f1a, #0a0a12);
+      border-radius: 18px;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 0 40px rgba(139, 92, 246, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .skyline-header {
+      padding: 18px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-soft);
+      background: rgba(139, 92, 246, 0.05);
+    }
+
+    .skyline-header h1 {
+      font-family: Orbitron, sans-serif;
+      font-size: 20px;
+      letter-spacing: 1px;
+      color: var(--purple-glow);
+    }
+
+    .skyline-header span {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .chat-area {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 12px 14px 20px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.4;
+      animation: fadeIn 0.25s ease;
+      position: relative;
+    }
+
+    .user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #7c3aed, #9333ea);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background: #151525;
+      border: 1px solid var(--border-soft);
+      color: var(--text-main);
+      border-bottom-left-radius: 4px;
+    }
+
+    .bot-text {
+      display: block;
+      padding-right: 26px;
+    }
+
+    .copy-btn {
+      position: absolute;
+      bottom: 6px;
+      right: 8px;
+      background: none;
+      border: none;
+      color: var(--purple-glow);
+      font-size: 12px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    .bot:hover .copy-btn {
+      opacity: 1;
+    }
+
+    .typing {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      height: 14px;
+    }
+
+    .typing span {
+      width: 6px;
+      height: 6px;
+      background: var(--purple-glow);
+      border-radius: 50%;
+      animation: blink 1.4s infinite both;
+    }
+
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes blink {
+      0% { opacity: 0.2; }
+      20% { opacity: 1; }
+      100% { opacity: 0.2; }
+    }
+
+    .input-area {
+      display: flex;
+      padding: 14px;
+      gap: 10px;
+      border-top: 1px solid var(--border-soft);
+      background: rgba(10, 10, 18, 0.9);
+    }
+
+    .input-area input {
+      flex: 1;
+      background: #0e0e1a;
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 12px;
+      color: var(--text-main);
+      outline: none;
+      font-size: 14px;
+    }
+
+    .input-area input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .input-area button {
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+      border: none;
+      border-radius: 12px;
+      padding: 0 18px;
+      font-family: Orbitron, sans-serif;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .input-area button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(139, 92, 246, 0.4);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="skyline-container">
+  <div class="skyline-header">
+    <h1>SKYLINE</h1>
+    <span>Powerful AI Companion</span>
+  </div>
+
+  <div class="chat-area" id="chatArea">
+    <div class="message bot">
+      <span class="bot-text">Hello. I am Skyline. How can I assist you today?</span>
+      <button class="copy-btn">⧉</button>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <input id="userInput" type="text" placeholder="Type your message..." />
+    <button onclick="sendMessage()">SEND</button>
+  </div>
+</div>
+
+<script>
+  const chatArea = document.getElementById('chatArea');
+  const userInput = document.getElementById('userInput');
+
+  function addMessage(text, sender) {
+    const msg = document.createElement('div');
+    msg.className = `message ${sender}`;
+
+    if (sender === 'bot') {
+      const span = document.createElement('span');
+      span.className = 'bot-text';
+      span.textContent = text;
+
+      const copy = document.createElement('button');
+      copy.className = 'copy-btn';
+      copy.textContent = '⧉';
+      copy.onclick = () => navigator.clipboard.writeText(text);
+
+      msg.appendChild(span);
+      msg.appendChild(copy);
+    } else {
+      msg.textContent = text;
+    }
+
+    chatArea.appendChild(msg);
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }
+
+  function addTypingIndicator() {
+    const msg = document.createElement('div');
+    msg.className = 'message bot';
+    msg.id = 'typing-indicator';
+
+    const typing = document.createElement('div');
+    typing.className = 'typing';
+    typing.innerHTML = '<span></span><span></span><span></span>';
+
+    msg.appendChild(typing);
+    chatArea.appendChild(msg);
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }
+
+  function removeTypingIndicator() {
+    const typing = document.getElementById('typing-indicator');
+    if (typing) typing.remove();
+  }
+
+  async function sendMessage() {
+    const text = userInput.value.trim();
+    if (!text) return;
+
+    addMessage(text, 'user');
+    userInput.value = '';
+
+    addTypingIndicator();
+
+    try {
+      const res = await fetch("http://localhost:3000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
+
+      const data = await res.json();
+      removeTypingIndicator();
+      addMessage(data.reply || 'No response from Skyline.', 'bot');
+
+    } catch (e) {
+      removeTypingIndicator();
+      addMessage('⚠️ Could not reach Skyline server.', 'bot');
+    }
+  }
+
+  userInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendMessage();
+  });
+</script>
+
+</body>
+</html>
