@@ -272,12 +272,11 @@
     addTypingIndicator();
 
     try {
-      const res = await fetch("https://skyline-ai.up.railway.app/", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ message: text })
-});
-
+      const res = await fetch("https://skyline-ai.up.railway.app/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
 
       const data = await res.json();
       removeTypingIndicator();
