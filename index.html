@@ -273,7 +273,7 @@
     addTypingIndicator();
 
     try {
-      const res = await fetch("https://skyline-ai.up.railway.app/chat", {
+      const res = await fetch("https://skyline-ai.up.railway.app", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text })
